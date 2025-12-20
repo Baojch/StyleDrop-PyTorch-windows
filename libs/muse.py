@@ -69,7 +69,7 @@ class MUSE(object):
             
         _z1 = rearrange(sampled_ids, 'b (i j) -> b i j', i=fmap_size, j=fmap_size)
         
-        # with adapter
+        # second pass: use adapter-guided logits (lambdaA/lambdaB) for style/content fusion
         ids = torch.full((_n_samples, seq_len), self.mask_ind, dtype=torch.long, device=device)
         cfg_scale = 0.
         lambdaA=0.

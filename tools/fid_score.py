@@ -113,6 +113,7 @@ def get_activations(files, model, batch_size=50, dims=2048, device='cpu', num_wo
         batch = batch.to(device)
 
         with torch.no_grad():
+            # pool_3 activations serve as Gaussian statistics for FID
             pred = model(batch)[0]
 
         # If model output is not scalar, apply global spatial average pooling.
@@ -165,6 +166,7 @@ def calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
     diff = mu1 - mu2
 
     # Product might be almost singular
+    # closed-form Fréchet distance between two Gaussians
     covmean, _ = linalg.sqrtm(sigma1.dot(sigma2), disp=False)
     if not np.isfinite(covmean).all():
         msg = ('fid calculation produces singular product; '
@@ -205,6 +207,7 @@ def calculate_activation_statistics(files, model, batch_size=50, dims=2048,
     -- sigma : The covariance matrix of the activations of the pool_3 layer of
                the inception model.
     """
+    # extract feature mean/cov needed for FID
     act = get_activations(files, model, batch_size, dims, device, num_workers)
     mu = np.mean(act, axis=0)
     sigma = np.cov(act, rowvar=False)
@@ -219,6 +222,7 @@ def compute_statistics_of_path(path, model, batch_size, dims, device, num_worker
         path = pathlib.Path(path)
         files = sorted([file for ext in IMAGE_EXTENSIONS
                        for file in path.glob('*.{}'.format(ext))])
+        # offline: compute stats from image folder when no cached npz
         m, s = calculate_activation_statistics(files, model, batch_size,
                                                dims, device, num_workers)
 
@@ -251,6 +255,7 @@ def calculate_fid_given_paths(paths, device=None, batch_size=50, dims=2048, num_
 
     model = InceptionV3([block_idx]).to(device)
 
+    # compare generated vs reference distributions
     m1, s1 = compute_statistics_of_path(paths[0], model, batch_size,
                                         dims, device, num_workers)
     m2, s2 = compute_statistics_of_path(paths[1], model, batch_size,

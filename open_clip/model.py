@@ -211,6 +211,7 @@ class CLIP(nn.Module):
 
     def encode_image(self, image, normalize: bool = False):
         features = self.visual(image)
+        # normalized embeddings so cosine similarity forms CLIP logits
         return F.normalize(features, dim=-1) if normalize else features
 
     def encode_text(self, text, normalize: bool = False):
@@ -225,6 +226,7 @@ class CLIP(nn.Module):
         x = self.ln_final(x)  # [batch_size, n_ctx, transformer.width]
         # take features from the eot embedding (eot_token is the highest number in each sequence)
         # x = x[torch.arange(x.shape[0]), text.argmax(dim=-1)] @ self.text_projection
+        # return token-level features; normalization keeps dot-product comparable to image tower
         return F.normalize(x, dim=-1) if normalize else x
 
     def forward(self, image, text):

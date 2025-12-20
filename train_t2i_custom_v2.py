@@ -26,7 +26,7 @@ import open_clip
 import taming.models.vqgan
 logging = logger
 
-torch.multiprocessing.set_sharing_strategy('file_system')  # todo
+torch.multiprocessing.set_sharing_strategy('file_system')
 
 
 def convert_model_dtype(models, dtype):
@@ -211,8 +211,10 @@ def train(config):
         _empty_context = torch.tensor(dataset.empty_context, device=device)
         _empty_context = einops.repeat(_empty_context, 'L D -> B L D', B=x.size(0))
         _uncond = nnet_ema(x, context=_empty_context)
+        # classifier-free guidance on text tokens
         res = _cond + scale * (_cond - _uncond)
         if lambdaA is not None:
+            # adapter guidance: push toward style/content adapter output and keep text alignment
             res = _cond_w_adapter + lambdaA*(_cond_w_adapter - _cond) + lambdaB*(_cond - _uncond)
         return res
 

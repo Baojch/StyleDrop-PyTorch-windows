@@ -260,7 +260,7 @@ class UViT(nn.Module):
         if self.skip:
             skips = []
         for blk in self.in_blocks:
-            # 将adapter放在attention之后
+            # inject adapter after attention to steer per-layer hidden states
             x = blk(x,adapter=self.adapter if use_adapter else None,layer=layer)
             if self.skip:
                 skips.append(x)# type: ignore

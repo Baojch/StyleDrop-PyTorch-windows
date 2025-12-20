@@ -1,10 +1,5 @@
 # StyleDrop
 
-<p align="left">
-  <a href="https://colab.research.google.com/github/neild0/StyleDrop-PyTorch-Interactive/blob/main/styledrop_colab.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg"></a> I didn't modify the colab demo. (NEED large RAM, my free colab can't run it)
-
-</p>
-
 
 This is an unofficial PyTorch implementation of [StyleDrop: Text-to-Image Generation in Any Style](https://arxiv.org/abs/2306.00983).
 
@@ -12,9 +7,6 @@ This is an unofficial PyTorch implementation of [StyleDrop: Text-to-Image Genera
 
 Unlike the parameters in the paper in (Round 1), we set $\lambda_A=2.0$, $\lambda_B=5.0$ and `d_prj=32`, `is_shared=False`, which we found work better, these hyperparameters can be seen in `configs/custom.py`.
 
-we release them to facilitate community research.
-
-**Since we also use it for CS182 Final Project, we run more styles and add content-adapter to it.**
 
 
 ![result1](img/teaser.png)
@@ -103,20 +95,6 @@ export OUTPUT_DIR="output_dir/for/this/experiment"
 accelerate launch --num_processes 8 --mixed_precision fp16 train_t2i_custom_v2.py --config=configs/custom.py
 ```
 
-## Inference (I didn't use it)
-
-The pretrained style_adapter weights can be downloaded from [🤗 Hugging Face](https://huggingface.co/zideliu/StyleDrop/tree/main).
-```shell
-#!/bin/bash
-export EVAL_CKPT="assets/ckpts/cc3m-285000.ckpt" 
-export ADAPTER="path/to/your/style_adapter"
-
-export OUTPUT_DIR="output/for/this/experiment"
-
-accelerate launch --num_processes 8 --mixed_precision fp16 train_t2i_custom_v2.py --config=configs/custom.py
-```
-
-
 ## Visualize demo
 Put the [my style_adapter weights](https://huggingface.co/datasets/unpackableorange/StyleDrop-weights/tree/main) in `./style_adapter` folder and run the following command will launch the demo:
 
@@ -152,6 +130,5 @@ Intergrate style and content adapters.
 
 * The implementation is based on [MUSE-PyTorch](https://github.com/baaivision/MUSE-Pytorch)
 * My modification is based on [StyleDrop-PyTorch-windows](https://github.com/endman100/StyleDrop-PyTorch-windows/tree/main)
-
 
 
